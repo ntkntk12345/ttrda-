@@ -1,0 +1,32 @@
+@import "tailwindcss";
+
+@theme {
+  --color-primary: #0ea5e9;
+  /* Sky 500 */
+  --color-background-dark: #0f172a;
+  /* Slate 900 */
+  --color-card-dark: #1e293b;
+  /* Slate 800 */
+
+  --font-display: Inter, sans-serif;
+}
+
+body {
+  background-color: var(--color-background-dark);
+  color: white;
+  font-family: var(--font-display);
+}
+
+@layer utilities {
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    /* IE and Edge */
+    scrollbar-width: none;
+    /* Firefox */
+  }
+
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+    /* Chrome, Safari and Opera */
+  }
+}
