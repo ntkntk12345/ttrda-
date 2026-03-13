@@ -1,6 +1,7 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  allowedDevOrigins: ['*.riker.replit.dev', '*.replit.dev'],
   images: {
     unoptimized: true,
     remotePatterns: [

@@ -6,8 +6,8 @@ import "./globals.css";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "CINEWAVE - Xem Phim Online Chất Lượng Cao",
-  description: "Trang web xem phim trực tuyến miễn phí với giao diện hiện đại.",
+  title: "zfilm - Xem Phim Online Chất Lượng Cao",
+  description: "zfilm - Trang web xem phim trực tuyến miễn phí với giao diện hiện đại.",
 };
 
 export default function RootLayout({

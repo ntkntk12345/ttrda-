@@ -15,7 +15,7 @@ interface PageProps {
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
     const { slug } = await params;
     return {
-        title: `Danh sách phim ${slug} - Xem phim Online`,
+        title: `Danh sách phim ${slug} - zfilm`,
         description: `Danh sách phim ${slug} mới nhất, cập nhật liên tục.`,
     };
 }

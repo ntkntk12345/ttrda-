@@ -109,10 +109,10 @@ export const OphimService = {
     /**
      * Tìm kiếm phim
      */
-    searchMovies: async (keyword: string): Promise<MovieListResponse | null> => {
+    searchMovies: async (keyword: string, page: number = 1): Promise<MovieListResponse | null> => {
         try {
-            const res = await fetch(`${API_HOST}/v1/api/tim-kiem?keyword=${encodeURIComponent(keyword)}`, {
-                cache: 'no-store', // Search results should not be cached tightly
+            const res = await fetch(`${API_HOST}/v1/api/tim-kiem?keyword=${encodeURIComponent(keyword)}&page=${page}`, {
+                cache: 'no-store',
             });
             if (!res.ok) throw new Error('Failed to search movies');
             const data = await res.json();

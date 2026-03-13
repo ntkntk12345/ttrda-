@@ -53,7 +53,7 @@ const Header = () => {
                 {/* Logo */}
                 <Link href="/" className="flex items-center gap-3 z-50 group">
                     <span className="text-3xl font-black tracking-wide text-white drop-shadow-[0_0_10px_rgba(14,165,233,0.6)] group-hover:drop-shadow-[0_0_15px_rgba(14,165,233,0.8)] transition-all duration-300">
-                        CINE<span className="text-primary">WAVE</span>
+                        z<span className="text-cyan-400">film</span>
                     </span>
                 </Link>
 

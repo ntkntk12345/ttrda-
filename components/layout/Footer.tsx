@@ -9,7 +9,7 @@ const Footer = () => {
                     {/* Brand */}
                     <div className="mb-8">
                         <span className="text-2xl font-black tracking-wide text-white drop-shadow-[0_0_5px_rgba(14,165,233,0.5)]">
-                            CINE<span className="text-primary">WAVE</span>
+                            z<span className="text-cyan-400">film</span>
                         </span>
                         <p className="mt-4 text-gray-400 text-sm leading-relaxed max-w-xs">
                             Trải nghiệm xem phim đỉnh cao với kho phim khổng lồ, chất lượng HD và cập nhật liên tục.
@@ -56,7 +56,7 @@ const Footer = () => {
                 </div>
 
                 <div className="border-t border-white/5 pt-8 flex flex-col md:flex-row items-center justify-between gap-4 text-sm text-gray-500">
-                    <p>&copy; {new Date().getFullYear()} CINEWAVE. All rights reserved.</p>
+                    <p>&copy; {new Date().getFullYear()} zfilm. All rights reserved.</p>
                     <div className="flex gap-6 mt-4 md:mt-0">
                         <Link href="#" className="hover:text-white transition-colors">Facebook</Link>
                         <Link href="#" className="hover:text-white transition-colors">Twitter</Link>
