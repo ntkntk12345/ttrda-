@@ -1,38 +1,75 @@
 "use client";
 
 import React, { useState } from 'react';
-import Link from 'next/link';
 import { clsx } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 
-export function cn(...inputs: (string | undefined | null | false)[]) {
+function cn(...inputs: (string | undefined | null | false)[]) {
     return twMerge(clsx(inputs));
 }
 
-interface EpisodeGroupProps {
-    episodes: any[];
-    currentEpisode?: string;
-    currentServer?: string;
+interface Episode {
+    name: string;
+    slug: string;
+    link_embed?: string;
+    link_m3u8?: string;
 }
 
-const EpisodeGroup: React.FC<EpisodeGroupProps> = ({ episodes, currentEpisode, currentServer }) => {
-    // Group episodes by server_name
-    // Phase 3 will have real data structure
-    const mockServers = episodes && episodes.length > 0 ? episodes : [
-        { server_name: 'Vietsub #1', server_data: Array.from({ length: 12 }, (_, i) => ({ name: `Tập ${i + 1}`, slug: `tap-${i + 1}`, link_embed: '' })) },
-        { server_name: 'Thuyết Minh #1', server_data: Array.from({ length: 12 }, (_, i) => ({ name: `Tập ${i + 1}`, slug: `tap-${i + 1}`, link_embed: '' })) }
-    ];
+interface Server {
+    server_name: string;
+    server_data: Episode[];
+}
 
-    const initialServerIndex = mockServers.findIndex((s: any) => s.server_name === currentServer);
-    const [activeServer, setActiveServer] = useState(initialServerIndex >= 0 ? initialServerIndex : 0);
+interface EpisodeGroupProps {
+    episodes: Server[];
+    currentEpisode?: string;
+    currentServer?: string;
+    activeServerIdx?: number;
+    onEpisodeSelect?: (episode: Episode, serverIdx: number) => void;
+}
 
-    // Sync state if prop changes (optional, but good for navigation)
-    React.useEffect(() => {
+const EpisodeGroup: React.FC<EpisodeGroupProps> = ({
+    episodes,
+    currentEpisode,
+    currentServer,
+    activeServerIdx: externalServerIdx,
+    onEpisodeSelect,
+}) => {
+    const servers = episodes && episodes.length > 0 ? episodes : [];
+
+    const getInitialIdx = () => {
+        if (externalServerIdx !== undefined) return externalServerIdx;
         if (currentServer) {
-            const idx = mockServers.findIndex((s: any) => s.server_name === currentServer);
-            if (idx >= 0) setActiveServer(idx);
+            const idx = servers.findIndex(s => s.server_name === currentServer);
+            if (idx >= 0) return idx;
         }
-    }, [currentServer, mockServers]);
+        return 0;
+    };
+
+    const [localActiveServer, setLocalActiveServer] = useState(getInitialIdx);
+
+    // Use external idx if provided, otherwise use local state
+    const activeServer = externalServerIdx !== undefined ? externalServerIdx : localActiveServer;
+
+    const handleServerChange = (idx: number) => {
+        setLocalActiveServer(idx);
+    };
+
+    const handleEpisodeClick = (episode: Episode) => {
+        if (onEpisodeSelect) {
+            onEpisodeSelect(episode, activeServer);
+        }
+    };
+
+    if (servers.length === 0) {
+        return (
+            <div className="bg-card-dark rounded-xl p-6 border border-white/5">
+                <p className="text-gray-400 text-sm">Không có tập phim nào.</p>
+            </div>
+        );
+    }
+
+    const activeServerData = servers[activeServer];
 
     return (
         <div className="bg-card-dark rounded-xl p-6 border border-white/5">
@@ -43,10 +80,10 @@ const EpisodeGroup: React.FC<EpisodeGroupProps> = ({ episodes, currentEpisode, c
 
             {/* Server Tabs */}
             <div className="flex flex-wrap gap-2 mb-6">
-                {mockServers.map((server: any, index: number) => (
+                {servers.map((server, index) => (
                     <button
                         key={index}
-                        onClick={() => setActiveServer(index)}
+                        onClick={() => handleServerChange(index)}
                         className={cn(
                             "px-4 py-2 rounded-lg text-sm font-medium transition-all",
                             activeServer === index
@@ -60,23 +97,24 @@ const EpisodeGroup: React.FC<EpisodeGroupProps> = ({ episodes, currentEpisode, c
             </div>
 
             {/* Episodes Grid */}
-            <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-2 max-h-60 overflow-y-auto pr-2 custom-scrollbar">
-                {mockServers[activeServer].server_data.map((ep: any, index: number) => (
-                    <Link
-                        key={index}
-                        href={`?tap=${ep.slug}&server=${encodeURIComponent(mockServers[activeServer].server_name)}`}
-                        scroll={false} // Prevent full page scroll reset
-                        className={cn(
-                            "py-2 rounded text-xs font-semibold transition-all border text-center block",
-                            currentEpisode === ep.slug
-                                ? "bg-white text-background-dark border-white"
-                                : "bg-transparent text-gray-300 border-white/10 hover:border-primary hover:text-primary"
-                        )}
-                    >
-                        {ep.name}
-                    </Link>
-                ))}
-            </div>
+            {activeServerData && (
+                <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-2 max-h-60 overflow-y-auto pr-2">
+                    {activeServerData.server_data.map((ep, index) => (
+                        <button
+                            key={index}
+                            onClick={() => handleEpisodeClick(ep)}
+                            className={cn(
+                                "py-2 rounded text-xs font-semibold transition-all border text-center",
+                                currentEpisode === ep.slug
+                                    ? "bg-cyan-400 text-black border-cyan-400 shadow-lg shadow-cyan-400/20"
+                                    : "bg-transparent text-gray-300 border-white/10 hover:border-cyan-400/50 hover:text-cyan-400"
+                            )}
+                        >
+                            {ep.name}
+                        </button>
+                    ))}
+                </div>
+            )}
         </div>
     );
 };
