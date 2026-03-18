@@ -1,0 +1,22 @@
+
+> temp_app@0.1.0 dev
+> next dev -p 5000 -H 0.0.0.0
+
+[1G[0K[1m[38;2;173;127;168m▲ Next.js 16.1.6[39m[22m (Turbopack)
+- Local:         http://localhost:5000
+- Network:       http://0.0.0.0:5000
+
+[32m[1m✓[22m[39m Starting...
+[32m[1m✓[22m[39m Ready in 1327ms
+ GET / [32m200[39m in 4.0s[2m (compile: 2.6s, render: 1376ms)[22m
+ GET / [32m200[39m in 4.0s[2m (compile: 2.8s, render: 1207ms)[22m
+ GET / [32m200[39m in 833ms[2m (compile: 349ms, render: 485ms)[22m
+[33m[1m⚠[22m[39m Cross origin request detected from 98a75a55-e123-43da-adb5-18a619810e27-00-1abi8ejjyxd0a.riker.replit.dev to /_next/* resource. In a future major version of Next.js, you will need to explicitly configure "allowedDevOrigins" in next.config to allow this.
+Read more: https://nextjs.org/docs/app/api-reference/config/next-config-js/allowedDevOrigins
+[33m[1m⚠[22m[39m Found a change in next.config.ts. Restarting the server to apply the changes...
+[1m[38;2;173;127;168m▲ Next.js 16.1.6[39m[22m (Turbopack)
+- Local:         http://localhost:5000
+- Network:       http://0.0.0.0:5000
+
+[32m[1m✓[22m[39m Starting...
+[32m[1m✓[22m[39m Ready in 1041ms

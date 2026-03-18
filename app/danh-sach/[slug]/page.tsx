@@ -1,97 +1,100 @@
-import { OphimService } from '@/services/ophim';
-import MovieGrid from '@/components/features/MovieGrid';
-import MovieFilter from '@/components/features/MovieFilter';
-import Pagination from '@/components/ui/pagination';
-import { notFound } from 'next/navigation';
-import { Metadata } from 'next';
+import MovieFilter from "@/components/features/MovieFilter";
+import MovieGrid from "@/components/features/MovieGrid";
+import Pagination from "@/components/ui/pagination";
+import { OphimService } from "@/services/ophim";
+import type { Metadata } from "next";
+import { notFound } from "next/navigation";
 
 export const revalidate = 3600;
 
 interface PageProps {
-    params: Promise<{ slug: string }>;
-    searchParams: Promise<{ page?: string }>;
+  params: Promise<{ slug: string }>;
+  searchParams: Promise<{ page?: string }>;
 }
 
-export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
-    const { slug } = await params;
-    return {
-        title: `Danh sách phim ${slug} - zfilm`,
-        description: `Danh sách phim ${slug} mới nhất, cập nhật liên tục.`,
-    };
+const titleMap: Record<string, string> = {
+  "phim-bo": "Phim bộ",
+  "phim-le": "Phim lẻ",
+  "hoat-hinh": "Phim hoạt hình",
+  "tv-shows": "TV Shows",
+  "phim-moi-cap-nhat": "Phim mới cập nhật",
+  "phim-vietsub": "Phim Vietsub",
+  "phim-thuyet-minh": "Phim thuyết minh",
+  "phim-long-tieng": "Phim lồng tiếng",
+  "phim-bo-dang-chieu": "Phim bộ đang chiếu",
+  "phim-bo-hoan-thanh": "Phim bộ hoàn thành",
+  "phim-sap-chieu": "Phim sắp chiếu",
+  subteam: "Subteam",
+  action: "Hành động",
+  adventure: "Phiêu lưu",
+  horror: "Kinh dị",
+  comedy: "Hài hước",
+  romance: "Tình cảm",
+  drama: "Tâm lý",
+  fantasy: "Viễn tưởng",
+  "science-fiction": "Khoa học",
+  mystery: "Bí ẩn",
+  thriller: "Giật gân",
+  crime: "Hình sự",
+  war: "Chiến tranh",
+  history: "Lịch sử",
+  music: "Âm nhạc",
+  family: "Gia đình",
+  documentary: "Tài liệu",
+  sport: "Thể thao",
+  animation: "Hoạt hình",
+  musical: "Nhạc kịch",
+  biography: "Tiểu sử",
+  western: "Miền tây",
+};
+
+export async function generateMetadata({
+  params,
+}: PageProps): Promise<Metadata> {
+  const { slug } = await params;
+  const title = titleMap[slug] ?? `Danh sách ${slug}`;
+
+  return {
+    title: `${title} - Phimhayz.site`,
+    description: `${title} mới nhất, cập nhật liên tục trên Phimhayz.site.`,
+  };
 }
 
-export default async function CategoryPage({ params, searchParams }: PageProps) {
-    const { slug } = await params;
-    const { page } = await searchParams;
-    const currentPage = Number(page) || 1;
+export default async function CategoryPage({
+  params,
+  searchParams,
+}: PageProps) {
+  const { slug } = await params;
+  const { page } = await searchParams;
+  const currentPage = Number(page) || 1;
 
-    const data = await OphimService.getMoviesByCategory(slug, currentPage);
+  const data = await OphimService.getMoviesByCategory(slug, currentPage);
 
-    if (!data || !data.items || data.items.length === 0) {
-        notFound();
-    }
+  if (!data?.items?.length) {
+    notFound();
+  }
 
-    const { items, pagination } = data;
-    const titleMap: Record<string, string> = {
-        'phim-bo': 'Phim Bộ',
-        'phim-le': 'Phim Lẻ',
-        'hoat-hinh': 'Phim Hoạt Hình',
-        'tv-shows': 'TV Shows',
-        'phim-moi-cap-nhat': 'Phim Mới Cập Nhật',
-        'phim-vietsub': 'Phim Vietsub',
-        'phim-thuyet-minh': 'Phim Thuyết Minh',
-        'phim-long-tieng': 'Phim Lồng Tiếng',
-        'phim-bo-dang-chieu': 'Phim Bộ Đang Chiếu',
-        'phim-bo-hoan-thanh': 'Phim Bộ Hoàn Thành',
-        'phim-sap-chieu': 'Phim Sắp Chiếu',
-        'subteam': 'Subteam',
-        'action': 'Hành Động',
-        'adventure': 'Phiêu Lưu',
-        'horror': 'Kinh Dị',
-        'comedy': 'Hài Hước',
-        'romance': 'Tình Cảm',
-        'drama': 'Tâm Lý',
-        'fantasy': 'Viễn Tưởng',
-        'science-fiction': 'Khoa Học',
-        'mystery': 'Bí Ẩn',
-        'thriller': 'Giật Gân',
-        'crime': 'Hình Sự',
-        'war': 'Chiến Tranh',
-        'history': 'Lịch Sử',
-        'music': 'Âm Nhạc',
-        'family': 'Gia Đình',
-        'documentary': 'Tài Liệu',
-        'sport': 'Thể Thao',
-        'animation': 'Hoạt Hình',
-        'musical': 'Nhạc Kịch',
-        'biography': 'Tiểu Sử',
-        'western': 'Miền Tây',
-    };
+  const title = titleMap[slug] ?? `Danh sách ${slug}`;
 
-    const title = titleMap[slug] || `Danh sách ${slug}`;
+  return (
+    <div className="min-h-screen bg-[#040714] pt-24 pb-20">
+      <div className="container mx-auto px-4">
+        <h1 className="mb-6 border-l-4 border-primary pl-4 text-2xl font-bold text-white">
+          {title}
+        </h1>
 
-    return (
-        <div className="min-h-screen pt-24 pb-20 bg-[#040714]">
-            <div className="container mx-auto px-4">
-                <h1 className="text-2xl font-bold text-white mb-6 border-l-4 border-primary pl-4">
-                    {title}
-                </h1>
+        <MovieFilter />
 
-                <MovieFilter />
+        <MovieGrid className="mb-12" movies={data.items} />
 
-                <MovieGrid
-                    movies={items}
-                    className="mb-12"
-                />
-
-                {pagination && (
-                    <Pagination
-                        currentPage={Number(pagination.currentPage)}
-                        totalPages={Math.min(Number(pagination.totalPages), 500)} // Limit to avoid too many pages
-                        baseUrl={`/danh-sach/${slug}`}
-                    />
-                )}
-            </div>
-        </div>
-    );
+        {data.pagination ? (
+          <Pagination
+            baseUrl={`/danh-sach/${slug}`}
+            currentPage={Number(data.pagination.currentPage)}
+            totalPages={Math.min(Number(data.pagination.totalPages), 500)}
+          />
+        ) : null}
+      </div>
+    </div>
+  );
 }

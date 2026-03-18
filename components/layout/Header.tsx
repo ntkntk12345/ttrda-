@@ -1,156 +1,182 @@
 "use client";
 
-import React, { useState, useEffect } from 'react';
-import Link from 'next/link';
-import { usePathname, useRouter } from 'next/navigation';
-import { Search, Menu, X, Bell, User } from 'lucide-react';
-import { clsx } from 'clsx';
-import { twMerge } from 'tailwind-merge';
+import React, { useEffect, useState } from "react";
+import Image from "next/image";
+import Link from "next/link";
+import { usePathname, useRouter } from "next/navigation";
+import { Bell, Menu, Search, User, X } from "lucide-react";
+import { clsx } from "clsx";
+import { twMerge } from "tailwind-merge";
 
 export function cn(...inputs: (string | undefined | null | false)[]) {
-    return twMerge(clsx(inputs));
+  return twMerge(clsx(inputs));
 }
 
-const Header = () => {
-    const [isScrolled, setIsScrolled] = useState(false);
-    const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-    const [searchQuery, setSearchQuery] = useState('');
-    const pathname = usePathname();
-    const router = useRouter();
+const navLinks = [
+  { name: "Trang chủ", href: "/" },
+  { name: "Phim bộ", href: "/danh-sach/phim-bo" },
+  { name: "Phim lẻ", href: "/danh-sach/phim-le" },
+  { name: "Hoạt hình", href: "/danh-sach/hoat-hinh" },
+  { name: "TV Shows", href: "/danh-sach/tv-shows" },
+];
 
-    useEffect(() => {
-        const handleScroll = () => {
-            setIsScrolled(window.scrollY > 0);
-        };
-        window.addEventListener('scroll', handleScroll);
-        return () => window.removeEventListener('scroll', handleScroll);
-    }, []);
+export default function Header() {
+  const [isScrolled, setIsScrolled] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+  const pathname = usePathname();
+  const router = useRouter();
 
-    const handleSearch = (e: React.FormEvent) => {
-        e.preventDefault();
-        if (searchQuery.trim()) {
-            router.push(`/tim-kiem?keyword=${encodeURIComponent(searchQuery)}`);
-            setIsMobileMenuOpen(false);
-        }
-    };
+  useEffect(() => {
+    function handleScroll() {
+      setIsScrolled(window.scrollY > 0);
+    }
 
-    const navLinks = [
-        { name: 'Trang Chủ', href: '/' },
-        { name: 'Phim Bộ', href: '/danh-sach/phim-bo' },
-        { name: 'Phim Lẻ', href: '/danh-sach/phim-le' },
-        { name: 'Hoạt Hình', href: '/danh-sach/hoat-hinh' },
-        { name: 'TV Shows', href: '/danh-sach/tv-shows' },
-    ];
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
-    return (
-        <header
-            className={cn(
-                'fixed top-0 left-0 right-0 z-50 transition-all duration-300',
-                isScrolled ? 'bg-background-dark/95 backdrop-blur-md shadow-lg py-3' : 'bg-transparent py-5'
+  function handleSearch(event: React.FormEvent) {
+    event.preventDefault();
+
+    if (!searchQuery.trim()) {
+      return;
+    }
+
+    router.push(`/tim-kiem?keyword=${encodeURIComponent(searchQuery.trim())}`);
+    setIsMobileMenuOpen(false);
+  }
+
+  return (
+    <header
+      className={cn(
+        "fixed left-0 right-0 top-0 z-50 transition-all duration-300",
+        isScrolled
+          ? "bg-background-dark/95 py-3 shadow-lg backdrop-blur-md"
+          : "bg-transparent py-5",
+      )}
+    >
+      <div className="container mx-auto flex items-center justify-between px-4">
+        <Link className="group z-50 flex items-center" href="/">
+          <Image
+            alt="Phimhayz.site"
+            className="h-14 w-14 rounded-full border border-white/10 object-cover shadow-[0_0_30px_rgba(34,211,238,0.25)] transition-transform duration-300 group-hover:scale-[1.03] sm:h-16 sm:w-16"
+            height={64}
+            priority
+            src="/images/phimhay.jpg"
+            width={64}
+          />
+        </Link>
+
+        <nav className="hidden items-center gap-8 md:flex">
+          {navLinks.map((link) => (
+            <Link
+              className={cn(
+                "group relative text-sm font-medium transition-colors hover:text-primary",
+                pathname === link.href ? "text-primary" : "text-gray-300",
+              )}
+              href={link.href}
+              key={link.href}
+            >
+              {link.name}
+              <span
+                className={cn(
+                  "absolute -bottom-1 left-0 h-0.5 bg-primary transition-all duration-300 group-hover:w-full",
+                  pathname === link.href ? "w-full" : "w-0",
+                )}
+              />
+            </Link>
+          ))}
+        </nav>
+
+        <div className="flex items-center gap-4">
+          <form
+            className="hidden items-center rounded-full border border-white/10 bg-card-dark/50 px-4 py-1.5 transition-all focus-within:border-primary/50 focus-within:bg-card-dark lg:flex"
+            onSubmit={handleSearch}
+          >
+            <Search className="h-4 w-4 text-gray-400" />
+            <input
+              className="ml-2 w-48 border-none bg-transparent text-sm text-white placeholder-gray-500 focus:outline-none"
+              onChange={(event) => setSearchQuery(event.target.value)}
+              placeholder="Tìm kiếm phim..."
+              type="text"
+              value={searchQuery}
+            />
+          </form>
+
+          <button
+            className="p-2 text-gray-300 hover:text-white lg:hidden"
+            onClick={() => router.push("/tim-kiem")}
+            type="button"
+          >
+            <Search className="h-5 w-5" />
+          </button>
+
+          <button
+            className="relative p-2 text-gray-300 hover:text-white"
+            type="button"
+          >
+            <Bell className="h-5 w-5" />
+            <span className="absolute right-1.5 top-1.5 h-2 w-2 rounded-full border-2 border-background-dark bg-red-500" />
+          </button>
+
+          <button
+            className="flex h-8 w-8 items-center justify-center overflow-hidden rounded-full border border-white/10 bg-gradient-to-r from-gray-700 to-gray-600"
+            type="button"
+          >
+            <User className="h-4 w-4 text-gray-300" />
+          </button>
+
+          <button
+            className="z-50 p-2 text-gray-300 hover:text-white md:hidden"
+            onClick={() => setIsMobileMenuOpen((current) => !current)}
+            type="button"
+          >
+            {isMobileMenuOpen ? (
+              <X className="h-6 w-6" />
+            ) : (
+              <Menu className="h-6 w-6" />
             )}
+          </button>
+        </div>
+      </div>
+
+      <div
+        className={cn(
+          "fixed inset-0 z-40 flex flex-col gap-6 bg-background-dark/98 px-6 pt-24 transition-transform duration-300 ease-in-out md:hidden",
+          isMobileMenuOpen ? "translate-x-0" : "translate-x-full",
+        )}
+      >
+        <form
+          className="flex items-center rounded-full border border-white/10 bg-card-dark px-4 py-3"
+          onSubmit={handleSearch}
         >
-            <div className="container mx-auto px-4 flex items-center justify-between">
-                {/* Logo */}
-                <Link href="/" className="flex items-center gap-3 z-50 group">
-                    <span className="text-3xl font-black tracking-wide text-white drop-shadow-[0_0_10px_rgba(14,165,233,0.6)] group-hover:drop-shadow-[0_0_15px_rgba(14,165,233,0.8)] transition-all duration-300">
-                        z<span className="text-cyan-400">film</span>
-                    </span>
-                </Link>
+          <Search className="h-5 w-5 text-gray-400" />
+          <input
+            className="ml-3 w-full border-none bg-transparent text-base text-white focus:outline-none"
+            onChange={(event) => setSearchQuery(event.target.value)}
+            placeholder="Tìm kiếm phim..."
+            type="text"
+            value={searchQuery}
+          />
+        </form>
 
-                {/* Desktop Navigation */}
-                <nav className="hidden md:flex items-center gap-8">
-                    {navLinks.map((link) => (
-                        <Link
-                            key={link.href}
-                            href={link.href}
-                            className={cn(
-                                'text-sm font-medium transition-colors hover:text-primary relative group',
-                                pathname === link.href ? 'text-primary' : 'text-gray-300'
-                            )}
-                        >
-                            {link.name}
-                            <span className={cn(
-                                "absolute -bottom-1 left-0 w-0 h-0.5 bg-primary transition-all duration-300 group-hover:w-full",
-                                pathname === link.href ? "w-full" : ""
-                            )} />
-                        </Link>
-                    ))}
-                </nav>
-
-                {/* Right Section: Search & Actions */}
-                <div className="flex items-center gap-4">
-                    <form onSubmit={handleSearch} className="hidden lg:flex items-center bg-card-dark/50 border border-white/10 rounded-full px-4 py-1.5 focus-within:border-primary/50 focus-within:bg-card-dark transition-all">
-                        <Search className="w-4 h-4 text-gray-400" />
-                        <input
-                            type="text"
-                            placeholder="Tìm kiếm phim..."
-                            className="bg-transparent border-none focus:outline-none text-sm text-white ml-2 w-48 placeholder-gray-500"
-                            value={searchQuery}
-                            onChange={(e) => setSearchQuery(e.target.value)}
-                        />
-                    </form>
-
-                    {/* Mobile Search Toggle */}
-                    <button
-                        className="lg:hidden p-2 text-gray-300 hover:text-white"
-                        onClick={() => router.push('/tim-kiem')}
-                    >
-                        <Search className="w-5 h-5" />
-                    </button>
-
-                    <button className="p-2 text-gray-300 hover:text-white relative">
-                        <Bell className="w-5 h-5" />
-                        <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-red-500 rounded-full border-2 border-background-dark"></span>
-                    </button>
-
-                    <button className="w-8 h-8 rounded-full bg-gradient-to-r from-gray-700 to-gray-600 flex items-center justify-center overflow-hidden border border-white/10">
-                        <User className="w-4 h-4 text-gray-300" />
-                    </button>
-
-                    {/* Mobile Menu Button */}
-                    <button
-                        className="md:hidden p-2 text-gray-300 hover:text-white z-50"
-                        onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-                    >
-                        {isMobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
-                    </button>
-                </div>
-            </div>
-
-            {/* Mobile Menu Overlay */}
-            <div className={cn(
-                "fixed inset-0 bg-background-dark/98 z-40 md:hidden transition-transform duration-300 ease-in-out flex flex-col pt-24 px-6 gap-6",
-                isMobileMenuOpen ? "translate-x-0" : "translate-x-full"
-            )}>
-                <form onSubmit={handleSearch} className="flex items-center bg-card-dark border border-white/10 rounded-full px-4 py-3">
-                    <Search className="w-5 h-5 text-gray-400" />
-                    <input
-                        type="text"
-                        placeholder="Tìm kiếm phim..."
-                        className="bg-transparent border-none focus:outline-none text-base text-white ml-3 w-full"
-                        value={searchQuery}
-                        onChange={(e) => setSearchQuery(e.target.value)}
-                    />
-                </form>
-
-                <nav className="flex flex-col gap-4">
-                    {navLinks.map((link) => (
-                        <Link
-                            key={link.href}
-                            href={link.href}
-                            className={cn(
-                                'text-lg font-medium py-2 border-b border-white/5 transition-colors hover:text-primary',
-                                pathname === link.href ? 'text-primary' : 'text-gray-300'
-                            )}
-                            onClick={() => setIsMobileMenuOpen(false)}
-                        >
-                            {link.name}
-                        </Link>
-                    ))}
-                </nav>
-            </div>
-        </header>
-    );
-};
-
-export default Header;
+        <nav className="flex flex-col gap-4">
+          {navLinks.map((link) => (
+            <Link
+              className={cn(
+                "border-b border-white/5 py-2 text-lg font-medium transition-colors hover:text-primary",
+                pathname === link.href ? "text-primary" : "text-gray-300",
+              )}
+              href={link.href}
+              key={link.href}
+              onClick={() => setIsMobileMenuOpen(false)}
+            >
+              {link.name}
+            </Link>
+          ))}
+        </nav>
+      </div>
+    </header>
+  );
+}

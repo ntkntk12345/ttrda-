@@ -1,0 +1,53 @@
+
+> temp_app@0.1.0 dev
+> next dev -p 5000 -H 0.0.0.0
+
+[1G[0K[1m[38;2;173;127;168m▲ Next.js 16.1.6[39m[22m (Turbopack)
+- Local:         http://localhost:5000
+- Network:       http://0.0.0.0:5000
+
+[32m[1m✓[22m[39m Starting...
+[32m[1m✓[22m[39m Ready in 1075ms
+ GET / [32m200[39m in 3.2s[2m (compile: 2.2s, render: 929ms)[22m
+ GET / [32m200[39m in 645ms[2m (compile: 52ms, render: 593ms)[22m
+ GET /tim-kiem?keyword=conan [32m200[39m in 1360ms[2m (compile: 947ms, render: 413ms)[22m
+ GET /tim-kiem?keyword=conan&page=2 [32m200[39m in 253ms[2m (compile: 3ms, render: 250ms)[22m
+Page Slug: tham-tu-lung-danh-conan-15-phut-tinh-lang
+Decoded Slug: tham-tu-lung-danh-conan-15-phut-tinh-lang
+[OphimService] Fetching movie: tham-tu-lung-danh-conan-15-phut-tinh-lang
+[OphimService] Fetching movie: tham-tu-lung-danh-conan-15-phut-tinh-lang
+Movie Data Status: [33mtrue[39m
+Movie Name: Thám Tử Lừng Danh Conan: 15 Phút Tĩnh Lặng
+ GET /phim/tham-tu-lung-danh-conan-15-phut-tinh-lang [32m200[39m in 1340ms[2m (compile: 1089ms, render: 251ms)[22m
+Page Slug: tham-tu-lung-danh-conan-15-phut-tinh-lang
+Decoded Slug: tham-tu-lung-danh-conan-15-phut-tinh-lang
+[OphimService] Fetching movie: tham-tu-lung-danh-conan-15-phut-tinh-lang
+[OphimService] Fetching movie: tham-tu-lung-danh-conan-15-phut-tinh-lang
+Movie Data Status: [33mtrue[39m
+Movie Name: Thám Tử Lừng Danh Conan: 15 Phút Tĩnh Lặng
+ GET /phim/tham-tu-lung-danh-conan-15-phut-tinh-lang?tap=1&server=Vietsub+%231 [32m200[39m in 366ms[2m (compile: 49ms, render: 317ms)[22m
+Page Slug: tham-tu-lung-danh-conan-15-phut-tinh-lang
+Decoded Slug: tham-tu-lung-danh-conan-15-phut-tinh-lang
+[OphimService] Fetching movie: tham-tu-lung-danh-conan-15-phut-tinh-lang
+[OphimService] Fetching movie: tham-tu-lung-danh-conan-15-phut-tinh-lang
+Movie Data Status: [33mtrue[39m
+Movie Name: Thám Tử Lừng Danh Conan: 15 Phút Tĩnh Lặng
+ GET /phim/tham-tu-lung-danh-conan-15-phut-tinh-lang?tap=1&server=Vietsub+%231 [32m200[39m in 354ms[2m (compile: 67ms, render: 287ms)[22m
+[32m[1m✓[22m[39m Compiled in 263ms
+Page Slug: tham-tu-lung-danh-conan-15-phut-tinh-lang
+Decoded Slug: tham-tu-lung-danh-conan-15-phut-tinh-lang
+[OphimService] Fetching movie: tham-tu-lung-danh-conan-15-phut-tinh-lang
+[OphimService] Fetching movie: tham-tu-lung-danh-conan-15-phut-tinh-lang
+[33m[1m⚠[22m[39m Fast Refresh had to perform a full reload when ./components/features/EpisodeGroup.tsx changed. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+Page Slug: tham-tu-lung-danh-conan-15-phut-tinh-lang
+Decoded Slug: tham-tu-lung-danh-conan-15-phut-tinh-lang
+[OphimService] Fetching movie: tham-tu-lung-danh-conan-15-phut-tinh-lang
+Movie Data Status: [33mtrue[39m
+Movie Name: Thám Tử Lừng Danh Conan: 15 Phút Tĩnh Lặng
+[OphimService] Fetching movie: tham-tu-lung-danh-conan-15-phut-tinh-lang
+Movie Data Status: [33mtrue[39m
+Movie Name: Thám Tử Lừng Danh Conan: 15 Phút Tĩnh Lặng
+ GET /phim/tham-tu-lung-danh-conan-15-phut-tinh-lang?tap=1&server=Vietsub%20%231 [32m200[39m in 991ms[2m (compile: 251ms, render: 740ms)[22m
+ GET /phim/tham-tu-lung-danh-conan-15-phut-tinh-lang?tap=1&server=Vietsub+%231 [32m200[39m in 461ms[2m (compile: 59ms, render: 402ms)[22m
+ GET / [32m200[39m in 649ms[2m (compile: 131ms, render: 518ms)[22m
+[32m[1m✓[22m[39m Compiled in 318ms

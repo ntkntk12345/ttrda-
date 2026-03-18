@@ -1,0 +1,25 @@
+
+> temp_app@0.1.0 dev
+> next dev -p 5000 -H 0.0.0.0
+
+[1G[0K[1m[38;2;173;127;168m▲ Next.js 16.1.6[39m[22m (Turbopack)
+- Local:         http://localhost:5000
+- Network:       http://0.0.0.0:5000
+
+[32m[1m✓[22m[39m Starting...
+[32m[1m✓[22m[39m Ready in 808ms
+ GET / [32m200[39m in 3.6s[2m (compile: 2.7s, render: 880ms)[22m
+ GET / [32m200[39m in 325ms[2m (compile: 4ms, render: 320ms)[22m
+ GET / [32m200[39m in 376ms[2m (compile: 3ms, render: 372ms)[22m
+[33m[1m⚠[22m[39m Cross origin request detected from 98a75a55-e123-43da-adb5-18a619810e27-00-1abi8ejjyxd0a.riker.replit.dev to /_next/* resource. In a future major version of Next.js, you will need to explicitly configure "allowedDevOrigins" in next.config to allow this.
+Read more: https://nextjs.org/docs/app/api-reference/config/next-config-js/allowedDevOrigins
+[32m[1m✓[22m[39m Compiled in 88ms
+ GET / [32m200[39m in 412ms[2m (compile: 130ms, render: 282ms)[22m
+[32m[1m✓[22m[39m Compiled in 205ms
+[32m[1m✓[22m[39m Compiled in 100ms
+[33m[1m⚠[22m[39m Fast Refresh had to perform a full reload when ./components/layout/Header.tsx changed. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+ GET / [32m200[39m in 1124ms[2m (compile: 271ms, render: 853ms)[22m
+[32m[1m✓[22m[39m Compiled in 79ms
+[32m[1m✓[22m[39m Compiled in 88ms
+[32m[1m✓[22m[39m Compiled in 84ms
+ GET / [32m200[39m in 368ms[2m (compile: 105ms, render: 263ms)[22m

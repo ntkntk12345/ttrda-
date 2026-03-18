@@ -1,52 +1,173 @@
-
-import { OphimService } from '@/services/ophim';
-import { OPhimUtils } from '@/utils/ophim';
+import type { Metadata } from 'next';
 import Image from 'next/image';
 import Link from 'next/link';
-import { Play, Calendar, Globe, Clock, Star, Share2, Eye } from 'lucide-react';
-import EpisodeGroup from '@/components/features/EpisodeGroup';
 import { notFound } from 'next/navigation';
-import { Metadata } from 'next';
+import { Calendar, Clock, Eye, Globe, Play } from 'lucide-react';
+
+import EpisodeGroup from '@/components/features/EpisodeGroup';
+import { OphimService } from '@/services/ophim';
+import type { Movie } from '@/types/ophim';
+import { OPhimUtils } from '@/utils/ophim';
 
 export const revalidate = 3600;
 
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://phimhayz.site';
+
 interface PageProps {
     params: Promise<{ slug: string }>;
+}
+
+function buildMovieDetailTitle(movie: Movie) {
+    const yearSuffix = movie.year ? ` (${movie.year})` : '';
+    const qualitySuffix = movie.quality ? ` ${movie.quality}` : '';
+    const langSuffix = movie.lang ? ` ${movie.lang}` : '';
+
+    return `Xem phim ${movie.name}${yearSuffix}${qualitySuffix}${langSuffix} | Phimhayz.site`;
+}
+
+function buildMovieDetailDescription(movie: Movie) {
+    const cleanedContent = OPhimUtils.cleanContent(movie.content || '').replace(/\s+/g, ' ').trim();
+    const metaBits = [
+        movie.quality,
+        movie.lang,
+        movie.time,
+        movie.episode_current,
+    ].filter(Boolean).join(', ');
+    const prefix = `Xem phim ${movie.name}${metaBits ? ` ${metaBits}` : ''} online tai Phimhayz.site.`;
+
+    return `${prefix} ${cleanedContent}`.trim().slice(0, 160);
+}
+
+function buildMovieKeywords(movie: Movie) {
+    return [
+        `xem phim ${movie.name}`,
+        movie.origin_name,
+        movie.lang,
+        movie.quality,
+        movie.episode_current,
+        movie.episode_total,
+        movie.year ? String(movie.year) : null,
+        ...(movie.category?.map((category) => category.name) ?? []),
+        ...(movie.actor ?? []),
+    ].filter((value): value is string => Boolean(value));
+}
+
+function getAggregateRating(movie: Movie) {
+    if (movie.imdb?.vote_average && movie.imdb?.vote_count) {
+        return {
+            '@type': 'AggregateRating',
+            ratingValue: movie.imdb.vote_average,
+            ratingCount: movie.imdb.vote_count,
+            bestRating: 10,
+            worstRating: 1,
+        };
+    }
+
+    if (movie.tmdb?.vote_average && movie.tmdb?.vote_count) {
+        return {
+            '@type': 'AggregateRating',
+            ratingValue: movie.tmdb.vote_average,
+            ratingCount: movie.tmdb.vote_count,
+            bestRating: 10,
+            worstRating: 1,
+        };
+    }
+
+    return undefined;
 }
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
     const { slug } = await params;
     const decodedSlug = decodeURIComponent(slug);
     const data = await OphimService.getMovieBySlug(decodedSlug);
-    if (!data?.movie) return { title: 'Movie Not Found' };
+
+    if (!data?.movie) {
+        return {
+            title: 'Khong tim thay phim | Phimhayz.site',
+            robots: {
+                index: false,
+                follow: false,
+            },
+        };
+    }
+
+    const title = buildMovieDetailTitle(data.movie);
+    const description = buildMovieDetailDescription(data.movie);
+    const canonicalPath = `/phim/${data.movie.slug}`;
+    const imageUrl = OPhimUtils.getThumbUrl(data.movie.thumb_url);
 
     return {
-        title: `${data.movie.name} - Xem phim Online`,
-        description: OPhimUtils.cleanContent(data.movie.content || '').substring(0, 160),
+        title,
+        description,
+        keywords: buildMovieKeywords(data.movie),
+        alternates: {
+            canonical: canonicalPath,
+        },
         openGraph: {
-            images: [OPhimUtils.getThumbUrl(data.movie.thumb_url)],
+            title,
+            description,
+            url: canonicalPath,
+            images: [imageUrl],
+        },
+        twitter: {
+            card: 'summary_large_image',
+            title,
+            description,
+            images: [imageUrl],
         },
     };
 }
 
 export default async function MovieDetailPage({ params }: PageProps) {
     const { slug } = await params;
-    console.log('Page Slug:', slug);
     const decodedSlug = decodeURIComponent(slug);
-    console.log('Decoded Slug:', decodedSlug);
     const data = await OphimService.getMovieBySlug(decodedSlug);
-    console.log('Movie Data Status:', data?.status);
-    console.log('Movie Name:', data?.movie?.name);
 
     if (!data || !data.movie) {
         notFound();
     }
 
     const { movie, episodes } = data;
+    const movieSummary = [
+        movie.quality,
+        movie.lang,
+        movie.time,
+        movie.episode_current,
+    ].filter(Boolean).join(' | ');
+    const movieStructuredData = {
+        '@context': 'https://schema.org',
+        '@type': 'Movie',
+        name: movie.name,
+        alternateName: movie.origin_name,
+        description: buildMovieDetailDescription(movie),
+        image: [
+            OPhimUtils.getThumbUrl(movie.thumb_url),
+            OPhimUtils.getPosterUrl(movie.poster_url),
+        ],
+        datePublished: movie.year ? `${movie.year}-01-01` : undefined,
+        genre: movie.category?.map((category) => category.name),
+        actor: movie.actor?.map((actor) => ({
+            '@type': 'Person',
+            name: actor,
+        })),
+        director: movie.director?.map((director) => ({
+            '@type': 'Person',
+            name: director,
+        })),
+        aggregateRating: getAggregateRating(movie),
+        inLanguage: movie.lang,
+        url: new URL(`/phim/${movie.slug}`, siteUrl).toString(),
+    };
 
     return (
         <div className="min-h-screen pb-20">
-            {/* Backdrop Section */}
+            <script
+                type="application/ld+json"
+                dangerouslySetInnerHTML={{
+                    __html: JSON.stringify(movieStructuredData),
+                }}
+            />
+
             <div className="relative h-[60vh] w-full">
                 <Image
                     src={OPhimUtils.getPosterUrl(movie.poster_url)}
@@ -56,14 +177,13 @@ export default async function MovieDetailPage({ params }: PageProps) {
                     priority
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-background-dark via-background-dark/80 to-transparent" />
-                <div className="absolute inset-0 backdrop-blur-sm bg-background-dark/30" />
+                <div className="absolute inset-0 bg-background-dark/30 backdrop-blur-sm" />
             </div>
 
-            <div className="container mx-auto px-4 -mt-32 relative z-10">
-                <div className="flex flex-col md:flex-row gap-8">
-                    {/* Poster Card */}
-                    <div className="w-full md:w-72 flex-shrink-0">
-                        <div className="aspect-[2/3] relative rounded-xl overflow-hidden shadow-2xl border-4 border-card-dark">
+            <div className="container relative z-10 mx-auto -mt-32 px-4">
+                <div className="flex flex-col gap-8 md:flex-row">
+                    <div className="w-full flex-shrink-0 md:w-72">
+                        <div className="relative aspect-[2/3] overflow-hidden rounded-xl border-4 border-card-dark shadow-2xl">
                             <Image
                                 src={OPhimUtils.getThumbUrl(movie.thumb_url)}
                                 alt={movie.name}
@@ -71,77 +191,91 @@ export default async function MovieDetailPage({ params }: PageProps) {
                                 className="object-cover"
                             />
                         </div>
+
                         <Link
                             href={episodes?.[0]?.server_data?.[0]?.slug ? `/watch/${movie.slug}` : '#'}
-                            className="mt-4 w-full bg-primary hover:bg-blue-500 text-white font-bold py-3 rounded-xl flex items-center justify-center gap-2 transition-all shadow-lg shadow-primary/20"
+                            className="mt-4 flex w-full items-center justify-center gap-2 rounded-xl bg-primary py-3 font-bold text-white shadow-lg shadow-primary/20 transition-all hover:bg-blue-500"
                         >
-                            <Play className="fill-current w-5 h-5" />
-                            XEM NGAY
+                            <Play className="h-5 w-5 fill-current" />
+                            XEM PHIM NGAY
                         </Link>
                     </div>
 
-                    {/* Info Content */}
-                    <div className="flex-1 text-white pt-4 md:pt-12">
-                        <h1 className="text-4xl md:text-5xl font-black mb-2">{movie.name}</h1>
-                        <h2 className="text-xl md:text-2xl text-gray-300 font-medium mb-6">{movie.origin_name}</h2>
+                    <div className="flex-1 pt-4 text-white md:pt-12">
+                        <h1 className="mb-2 text-4xl font-black md:text-5xl">
+                            Xem phim {movie.name}
+                        </h1>
+                        <h2 className="mb-3 text-xl font-medium text-gray-300 md:text-2xl">
+                            {movie.origin_name}
+                        </h2>
+                        {movieSummary ? (
+                            <p className="mb-6 text-sm font-medium text-cyan-300">{movieSummary}</p>
+                        ) : null}
 
-                        {/* Meta Stats */}
-                        <div className="flex flex-wrap items-center gap-6 mb-8 text-sm text-gray-300 bg-white/5 p-4 rounded-xl border border-white/10 backdrop-blur-md">
+                        <div className="mb-8 flex flex-wrap items-center gap-6 rounded-xl border border-white/10 bg-white/5 p-4 text-sm text-gray-300 backdrop-blur-md">
                             <div className="flex items-center gap-2">
-                                <Calendar className="w-4 h-4 text-primary" />
+                                <Calendar className="h-4 w-4 text-primary" />
                                 <span>{movie.year}</span>
                             </div>
                             <div className="flex items-center gap-2">
-                                <Clock className="w-4 h-4 text-primary" />
+                                <Clock className="h-4 w-4 text-primary" />
                                 <span>{movie.time}</span>
                             </div>
                             <div className="flex items-center gap-2">
-                                <Globe className="w-4 h-4 text-primary" />
+                                <Globe className="h-4 w-4 text-primary" />
                                 <span>{movie.country?.[0]?.name}</span>
                             </div>
                             <div className="flex items-center gap-2">
-                                <Eye className="w-4 h-4 text-primary" />
-                                <span>{movie.view} lượt xem</span>
+                                <Eye className="h-4 w-4 text-primary" />
+                                <span>{movie.view} luot xem</span>
                             </div>
                         </div>
 
-                        {/* Description */}
                         <div className="mb-8">
-                            <h3 className="text-lg font-bold mb-3 border-l-4 border-primary pl-3">Nội Dung Phim</h3>
+                            <h3 className="mb-3 border-l-4 border-primary pl-3 text-lg font-bold">
+                                Noi Dung Phim
+                            </h3>
                             <div
-                                className="text-gray-300 leading-relaxed text-base/7"
+                                className="text-base/7 leading-relaxed text-gray-300"
                                 dangerouslySetInnerHTML={{ __html: movie.content || '' }}
                             />
                         </div>
 
-                        {/* Details Grid */}
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                        <div className="mb-8 grid grid-cols-1 gap-6 md:grid-cols-2">
                             <div>
-                                <h3 className="text-sm font-semibold text-gray-400 mb-2 uppercase tracking-wider">Đạo Diễn</h3>
-                                <p className="text-white font-medium">{movie.director?.join(', ') || 'N/A'}</p>
+                                <h3 className="mb-2 text-sm font-semibold uppercase tracking-wider text-gray-400">
+                                    Dao Dien
+                                </h3>
+                                <p className="font-medium text-white">{movie.director?.join(', ') || 'N/A'}</p>
                             </div>
                             <div>
-                                <h3 className="text-sm font-semibold text-gray-400 mb-2 uppercase tracking-wider">Diễn Viên</h3>
-                                <p className="text-white font-medium line-clamp-2">{movie.actor?.join(', ') || 'N/A'}</p>
+                                <h3 className="mb-2 text-sm font-semibold uppercase tracking-wider text-gray-400">
+                                    Dien Vien
+                                </h3>
+                                <p className="line-clamp-2 font-medium text-white">{movie.actor?.join(', ') || 'N/A'}</p>
                             </div>
                             <div>
-                                <h3 className="text-sm font-semibold text-gray-400 mb-2 uppercase tracking-wider">Thể Loại</h3>
+                                <h3 className="mb-2 text-sm font-semibold uppercase tracking-wider text-gray-400">
+                                    The Loai
+                                </h3>
                                 <div className="flex flex-wrap gap-2">
-                                    {movie.category?.map(cat => (
-                                        <span key={cat.id} className="bg-white/10 px-3 py-1 rounded-full text-xs hover:bg-primary cursor-pointer transition-colors">
-                                            {cat.name}
+                                    {movie.category?.map((category) => (
+                                        <span
+                                            key={category.id}
+                                            className="cursor-pointer rounded-full bg-white/10 px-3 py-1 text-xs transition-colors hover:bg-primary"
+                                        >
+                                            {category.name}
                                         </span>
                                     ))}
                                 </div>
                             </div>
                         </div>
 
-                        {/* Episodes */}
-                        {episodes && episodes.length > 0 && (
+                        {episodes && episodes.length > 0 ? (
                             <div className="mt-12">
                                 <EpisodeGroup episodes={episodes} />
                             </div>
-                        )}
+                        ) : null}
                     </div>
                 </div>
             </div>
