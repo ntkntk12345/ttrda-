@@ -1,5 +1,13 @@
 import { getActiveScripts } from "../utils/admin/scripts-store";
 
+function wrapScriptBlock(scriptId: string, markup: string) {
+  return [
+    `<script type="application/json" data-phimhayz-global-script-start="${scriptId}"></script>`,
+    markup,
+    `<script type="application/json" data-phimhayz-global-script-end="${scriptId}"></script>`,
+  ];
+}
+
 export default defineNitroPlugin((nitroApp) => {
   nitroApp.hooks.hook("render:html", async (html, { event }) => {
     if (event.path.startsWith("/dep-trai-s1")) {
@@ -15,19 +23,19 @@ export default defineNitroPlugin((nitroApp) => {
     html.head.push(
       ...scripts
         .filter((script) => script.placement === "head")
-        .map((script) => script.code),
+        .flatMap((script) => wrapScriptBlock(script.id, script.code)),
     );
 
     html.bodyPrepend.push(
       ...scripts
         .filter((script) => script.placement === "body-start")
-        .map((script) => script.code),
+        .flatMap((script) => wrapScriptBlock(script.id, script.code)),
     );
 
     html.bodyAppend.push(
       ...scripts
         .filter((script) => script.placement === "body-end")
-        .map((script) => script.code),
+        .flatMap((script) => wrapScriptBlock(script.id, script.code)),
     );
   });
 });

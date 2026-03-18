@@ -1,13 +1,54 @@
-<script setup lang="ts">
 import type { GlobalScriptEntry } from "~/types/admin";
 
+const ADMIN_ROUTE_PREFIX = "/dep-trai-s1";
 const SSR_MARKER_SELECTOR = 'meta[name="phimhayz-global-scripts-ssr"]';
+const SSR_BLOCK_START_SELECTOR = "script[data-phimhayz-global-script-start]";
+const SSR_BLOCK_END_ATTRIBUTE = "data-phimhayz-global-script-end";
+
 const insertedNodes: Node[] = [];
+let skippedInitialSsrPass = false;
 
 function cleanupInsertedNodes() {
   while (insertedNodes.length > 0) {
     const node = insertedNodes.pop();
     node?.parentNode?.removeChild(node);
+  }
+}
+
+function cleanupSsrInjectedNodes() {
+  const startMarkers = Array.from(
+    document.querySelectorAll<HTMLScriptElement>(SSR_BLOCK_START_SELECTOR),
+  );
+
+  for (const startMarker of startMarkers) {
+    const blockId = startMarker.dataset.phimhayzGlobalScriptStart;
+
+    if (!blockId || !startMarker.parentNode) {
+      continue;
+    }
+
+    const parent = startMarker.parentNode;
+    let cursor: ChildNode | null = startMarker;
+
+    while (cursor) {
+      const nextSibling: ChildNode | null = cursor.nextSibling;
+      parent.removeChild(cursor);
+
+      if (
+        cursor instanceof HTMLScriptElement &&
+        cursor.getAttribute(SSR_BLOCK_END_ATTRIBUTE) === blockId
+      ) {
+        break;
+      }
+
+      cursor = nextSibling;
+    }
+  }
+
+  const ssrMarkers = Array.from(document.querySelectorAll(SSR_MARKER_SELECTOR));
+
+  for (const marker of ssrMarkers) {
+    marker.parentNode?.removeChild(marker);
   }
 }
 
@@ -61,7 +102,11 @@ function createNodesFromHtml(html: string) {
     .filter((node): node is Node => node !== null);
 }
 
-function appendNodes(target: ParentNode, nodes: Node[], anchor: ChildNode | null = null) {
+function appendNodes(
+  target: ParentNode,
+  nodes: Node[],
+  anchor: ChildNode | null = null,
+) {
   for (const node of nodes) {
     if (anchor) {
       target.insertBefore(node, anchor);
@@ -111,22 +156,40 @@ async function loadScripts() {
   return Array.isArray(result?.scripts) ? result.scripts : [];
 }
 
-onMounted(async () => {
-  if (document.querySelector(SSR_MARKER_SELECTOR)) {
-    return;
+export default defineNuxtPlugin((nuxtApp) => {
+  async function refreshScriptsForRoute() {
+    const route = useRoute();
+
+    if (route.path.startsWith(ADMIN_ROUTE_PREFIX)) {
+      cleanupInsertedNodes();
+      cleanupSsrInjectedNodes();
+      return;
+    }
+
+    if (!skippedInitialSsrPass && document.querySelector(SSR_MARKER_SELECTOR)) {
+      skippedInitialSsrPass = true;
+      return;
+    }
+
+    cleanupSsrInjectedNodes();
+
+    try {
+      const scripts = await loadScripts();
+      injectScripts(scripts);
+    } catch {
+      cleanupInsertedNodes();
+    }
   }
 
-  try {
-    const scripts = await loadScripts();
-    injectScripts(scripts);
-  } catch {
+  nuxtApp.hook("app:mounted", () => {
+    void refreshScriptsForRoute();
+  });
+
+  nuxtApp.hook("page:finish", () => {
+    void refreshScriptsForRoute();
+  });
+
+  nuxtApp.hook("app:error", () => {
     cleanupInsertedNodes();
-  }
+  });
 });
-
-onBeforeUnmount(() => {
-  cleanupInsertedNodes();
-});
-</script>
-
-<template />
