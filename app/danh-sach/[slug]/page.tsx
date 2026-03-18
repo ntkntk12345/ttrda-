@@ -1,9 +1,10 @@
+import type { Metadata } from "next";
+import { notFound } from "next/navigation";
+
 import MovieFilter from "@/components/features/MovieFilter";
 import MovieGrid from "@/components/features/MovieGrid";
 import Pagination from "@/components/ui/pagination";
 import { OphimService } from "@/services/ophim";
-import type { Metadata } from "next";
-import { notFound } from "next/navigation";
 
 export const revalidate = 3600;
 
@@ -77,7 +78,7 @@ export default async function CategoryPage({
   const title = titleMap[slug] ?? `Danh sách ${slug}`;
 
   return (
-    <div className="min-h-screen bg-[#040714] pt-24 pb-20">
+    <div className="min-h-screen bg-[#040714] pb-20 pt-24">
       <div className="container mx-auto px-4">
         <h1 className="mb-6 border-l-4 border-primary pl-4 text-2xl font-bold text-white">
           {title}

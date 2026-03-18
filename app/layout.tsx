@@ -12,9 +12,9 @@ const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://phimhayz.site";
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
-  title: "Phimhayz.site - Xem phim online chat luong cao",
+  title: "Phimhayz.site - Xem phim online chất lượng cao",
   description:
-    "Phimhayz.site la trang xem phim truc tuyen voi kho phim cap nhat lien tuc, toc do nhanh va giao dien hien dai.",
+    "Phimhayz.site là trang xem phim trực tuyến với kho phim cập nhật liên tục, tốc độ nhanh và giao diện hiện đại.",
   openGraph: {
     locale: "vi_VN",
     siteName: "Phimhayz.site",

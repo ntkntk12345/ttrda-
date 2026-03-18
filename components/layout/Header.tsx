@@ -13,10 +13,10 @@ export function cn(...inputs: (string | undefined | null | false)[]) {
 }
 
 const navLinks = [
-  { name: "Trang chá»§", href: "/" },
-  { name: "Phim bá»™", href: "/danh-sach/phim-bo" },
-  { name: "Phim láº»", href: "/danh-sach/phim-le" },
-  { name: "Hoáº¡t hÃ¬nh", href: "/danh-sach/hoat-hinh" },
+  { name: "Trang chủ", href: "/" },
+  { name: "Phim bộ", href: "/danh-sach/phim-bo" },
+  { name: "Phim lẻ", href: "/danh-sach/phim-le" },
+  { name: "Hoạt hình", href: "/danh-sach/hoat-hinh" },
   { name: "TV Shows", href: "/danh-sach/tv-shows" },
 ];
 
@@ -105,7 +105,7 @@ export default function Header() {
             <input
               className="ml-2 w-48 border-none bg-transparent text-sm text-white placeholder-gray-500 focus:outline-none"
               onChange={(event) => setSearchQuery(event.target.value)}
-              placeholder="TÃ¬m kiáº¿m phim..."
+              placeholder="Tìm kiếm phim..."
               type="text"
               value={searchQuery}
             />
@@ -169,7 +169,7 @@ export default function Header() {
             autoFocus
             className="ml-3 w-full border-none bg-transparent text-base text-white focus:outline-none"
             onChange={(event) => setSearchQuery(event.target.value)}
-            placeholder="TÃ¬m kiáº¿m phim..."
+            placeholder="Tìm kiếm phim..."
             type="text"
             value={searchQuery}
           />
