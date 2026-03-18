@@ -1,34 +1,31 @@
 {
-  "compilerOptions": {
-    "target": "ES2017",
-    "lib": ["dom", "dom.iterable", "esnext"],
-    "allowJs": true,
-    "skipLibCheck": true,
-    "strict": true,
-    "noEmit": true,
-    "esModuleInterop": true,
-    "module": "esnext",
-    "moduleResolution": "bundler",
-    "resolveJsonModule": true,
-    "isolatedModules": true,
-    "jsx": "react-jsx",
-    "incremental": true,
-    "plugins": [
-      {
-        "name": "next"
-      }
-    ],
-    "paths": {
-      "@/*": ["./*"]
-    }
-  },
+  "extends": "./.nuxt/tsconfig.json",
   "include": [
-    "next-env.d.ts",
-    "**/*.ts",
-    "**/*.tsx",
-    ".next/types/**/*.ts",
-    ".next/dev/types/**/*.ts",
-    "**/*.mts"
+    ".nuxt/**/*.d.ts",
+    "nuxt.config.ts",
+    "src/**/*.ts",
+    "src/**/*.tsx",
+    "src/**/*.vue",
+    "server/**/*.ts",
+    "server/**/*.d.ts"
   ],
-  "exclude": ["node_modules"]
+  "exclude": [
+    "app",
+    "app/**/*",
+    "components",
+    "components/**/*",
+    "lib",
+    "lib/**/*",
+    "services",
+    "services/**/*",
+    "scripts",
+    "scripts/**/*",
+    "utils",
+    "utils/**/*",
+    "next.config.ts",
+    "next-node-html-parser.d.ts",
+    ".output",
+    "dist",
+    "node_modules"
+  ]
 }
