@@ -13,16 +13,17 @@ export function cn(...inputs: (string | undefined | null | false)[]) {
 }
 
 const navLinks = [
-  { name: "Trang chủ", href: "/" },
-  { name: "Phim bộ", href: "/danh-sach/phim-bo" },
-  { name: "Phim lẻ", href: "/danh-sach/phim-le" },
-  { name: "Hoạt hình", href: "/danh-sach/hoat-hinh" },
+  { name: "Trang chá»§", href: "/" },
+  { name: "Phim bá»™", href: "/danh-sach/phim-bo" },
+  { name: "Phim láº»", href: "/danh-sach/phim-le" },
+  { name: "Hoáº¡t hÃ¬nh", href: "/danh-sach/hoat-hinh" },
   { name: "TV Shows", href: "/danh-sach/tv-shows" },
 ];
 
 export default function Header() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isMobileSearchOpen, setIsMobileSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const pathname = usePathname();
   const router = useRouter();
@@ -36,6 +37,11 @@ export default function Header() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
+  useEffect(() => {
+    setIsMobileMenuOpen(false);
+    setIsMobileSearchOpen(false);
+  }, [pathname]);
+
   function handleSearch(event: React.FormEvent) {
     event.preventDefault();
 
@@ -45,6 +51,7 @@ export default function Header() {
 
     router.push(`/tim-kiem?keyword=${encodeURIComponent(searchQuery.trim())}`);
     setIsMobileMenuOpen(false);
+    setIsMobileSearchOpen(false);
   }
 
   return (
@@ -98,7 +105,7 @@ export default function Header() {
             <input
               className="ml-2 w-48 border-none bg-transparent text-sm text-white placeholder-gray-500 focus:outline-none"
               onChange={(event) => setSearchQuery(event.target.value)}
-              placeholder="Tìm kiếm phim..."
+              placeholder="TÃ¬m kiáº¿m phim..."
               type="text"
               value={searchQuery}
             />
@@ -106,7 +113,10 @@ export default function Header() {
 
           <button
             className="p-2 text-gray-300 hover:text-white lg:hidden"
-            onClick={() => router.push("/tim-kiem")}
+            onClick={() => {
+              setIsMobileMenuOpen(false);
+              setIsMobileSearchOpen((current) => !current);
+            }}
             type="button"
           >
             <Search className="h-5 w-5" />
@@ -129,7 +139,10 @@ export default function Header() {
 
           <button
             className="z-50 p-2 text-gray-300 hover:text-white md:hidden"
-            onClick={() => setIsMobileMenuOpen((current) => !current)}
+            onClick={() => {
+              setIsMobileSearchOpen(false);
+              setIsMobileMenuOpen((current) => !current);
+            }}
             type="button"
           >
             {isMobileMenuOpen ? (
@@ -143,8 +156,8 @@ export default function Header() {
 
       <div
         className={cn(
-          "fixed inset-0 z-40 flex flex-col gap-6 bg-background-dark/98 px-6 pt-24 transition-transform duration-300 ease-in-out md:hidden",
-          isMobileMenuOpen ? "translate-x-0" : "translate-x-full",
+          "overflow-hidden border-t border-white/5 bg-background-dark/95 px-4 transition-all duration-300 md:hidden",
+          isMobileSearchOpen ? "max-h-28 py-4 opacity-100" : "max-h-0 py-0 opacity-0",
         )}
       >
         <form
@@ -153,14 +166,22 @@ export default function Header() {
         >
           <Search className="h-5 w-5 text-gray-400" />
           <input
+            autoFocus
             className="ml-3 w-full border-none bg-transparent text-base text-white focus:outline-none"
             onChange={(event) => setSearchQuery(event.target.value)}
-            placeholder="Tìm kiếm phim..."
+            placeholder="TÃ¬m kiáº¿m phim..."
             type="text"
             value={searchQuery}
           />
         </form>
+      </div>
 
+      <div
+        className={cn(
+          "fixed inset-0 z-40 flex flex-col gap-6 bg-background-dark/98 px-6 pt-24 transition-transform duration-300 ease-in-out md:hidden",
+          isMobileMenuOpen ? "translate-x-0" : "translate-x-full",
+        )}
+      >
         <nav className="flex flex-col gap-4">
           {navLinks.map((link) => (
             <Link
