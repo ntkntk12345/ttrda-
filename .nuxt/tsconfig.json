@@ -125,7 +125,7 @@
         "./imports"
       ],
       "#app-manifest": [
-        "./manifest/meta/dev.json"
+        "./manifest/meta/1ebcd6ce-dc07-43b1-afac-751cff462e04.json"
       ],
       "#components": [
         "./components"
@@ -183,6 +183,6 @@
     "../node_modules/@nuxtjs/tailwindcss/node_modules",
     "../node_modules/runtime/server",
     "../node_modules/dist/runtime/server",
-    "dev"
+    "../.output"
   ]
 }

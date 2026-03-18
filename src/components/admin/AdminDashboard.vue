@@ -18,6 +18,20 @@ interface ScriptFormState {
   enabled: boolean;
 }
 
+interface AdminApiErrorResponse {
+  error?: string;
+  message?: string;
+  statusMessage?: string;
+  data?: {
+    message?: string;
+    statusMessage?: string;
+  };
+}
+
+interface ScriptMutationResponse extends AdminApiErrorResponse {
+  script?: GlobalScriptEntry;
+}
+
 const props = defineProps<{
   initialScripts: GlobalScriptEntry[];
 }>();
@@ -43,6 +57,20 @@ function formatDate(value: string) {
     dateStyle: "medium",
     timeStyle: "short",
   }).format(new Date(value));
+}
+
+function getErrorMessage(
+  result: AdminApiErrorResponse | null,
+  fallback: string,
+) {
+  return (
+    result?.error ||
+    result?.statusMessage ||
+    result?.data?.statusMessage ||
+    result?.message ||
+    result?.data?.message ||
+    fallback
+  );
 }
 
 const scripts = ref(sortScripts(props.initialScripts));
@@ -83,6 +111,7 @@ async function handleSubmit() {
         : "/api/admin/scripts",
       {
         method: editingId.value ? "PUT" : "POST",
+        credentials: "same-origin",
         headers: {
           "Content-Type": "application/json",
         },
@@ -91,11 +120,11 @@ async function handleSubmit() {
     );
 
     const result = (await response.json().catch(() => null)) as
-      | { error?: string; script?: GlobalScriptEntry }
+      | ScriptMutationResponse
       | null;
 
     if (!response.ok || !result?.script) {
-      error.value = result?.error || "Không thể lưu script.";
+      error.value = getErrorMessage(result, "Không thể lưu script.");
       return;
     }
 
@@ -128,6 +157,7 @@ async function toggleScript(script: GlobalScriptEntry) {
   try {
     const response = await fetch(`/api/admin/scripts/${script.id}`, {
       method: "PUT",
+      credentials: "same-origin",
       headers: {
         "Content-Type": "application/json",
       },
@@ -141,11 +171,11 @@ async function toggleScript(script: GlobalScriptEntry) {
     });
 
     const result = (await response.json().catch(() => null)) as
-      | { error?: string; script?: GlobalScriptEntry }
+      | ScriptMutationResponse
       | null;
 
     if (!response.ok || !result?.script) {
-      error.value = result?.error || "Không thể đổi trạng thái script.";
+      error.value = getErrorMessage(result, "Không thể đổi trạng thái script.");
       return;
     }
 
@@ -174,14 +204,15 @@ async function removeScript(script: GlobalScriptEntry) {
   try {
     const response = await fetch(`/api/admin/scripts/${script.id}`, {
       method: "DELETE",
+      credentials: "same-origin",
     });
 
     const result = (await response.json().catch(() => null)) as
-      | { error?: string }
+      | AdminApiErrorResponse
       | null;
 
     if (!response.ok) {
-      error.value = result?.error || "Không thể xóa script.";
+      error.value = getErrorMessage(result, "Không thể xóa script.");
       return;
     }
 
@@ -204,6 +235,7 @@ async function logout() {
   try {
     await fetch("/api/admin/logout", {
       method: "POST",
+      credentials: "same-origin",
     });
   } finally {
     window.location.reload();

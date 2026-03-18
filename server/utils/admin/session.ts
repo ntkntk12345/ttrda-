@@ -5,7 +5,7 @@ import {
   randomBytes,
 } from "node:crypto";
 import type { H3Event } from "h3";
-import { deleteCookie, getCookie, setCookie } from "h3";
+import { deleteCookie, getCookie, getRequestProtocol, setCookie } from "h3";
 
 import { SESSION_SECRET } from "./credentials";
 
@@ -72,6 +72,10 @@ function decryptPayload(token: string) {
   }
 }
 
+function shouldUseSecureCookies(event: H3Event) {
+  return getRequestProtocol(event) === "https";
+}
+
 export function createAdminSession(event: H3Event) {
   const issuedAt = Date.now();
   const expiresAt = issuedAt + SESSION_TTL_SECONDS * 1000;
@@ -84,7 +88,7 @@ export function createAdminSession(event: H3Event) {
   setCookie(event, SESSION_COOKIE_NAME, token, {
     httpOnly: true,
     sameSite: "lax",
-    secure: process.env.NODE_ENV === "production",
+    secure: shouldUseSecureCookies(event),
     path: "/",
     expires: new Date(expiresAt),
   });
@@ -94,7 +98,7 @@ export function clearAdminSession(event: H3Event) {
   deleteCookie(event, SESSION_COOKIE_NAME, {
     httpOnly: true,
     sameSite: "lax",
-    secure: process.env.NODE_ENV === "production",
+    secure: shouldUseSecureCookies(event),
     path: "/",
   });
 }

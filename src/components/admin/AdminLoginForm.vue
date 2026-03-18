@@ -1,10 +1,34 @@
 <script setup lang="ts">
 import { LockKeyhole, ShieldCheck } from "lucide-vue-next";
 
+interface AdminApiErrorResponse {
+  error?: string;
+  message?: string;
+  statusMessage?: string;
+  data?: {
+    message?: string;
+    statusMessage?: string;
+  };
+}
+
 const username = ref("");
 const password = ref("");
 const error = ref("");
 const isSubmitting = ref(false);
+
+function getErrorMessage(
+  result: AdminApiErrorResponse | null,
+  fallback: string,
+) {
+  return (
+    result?.error ||
+    result?.statusMessage ||
+    result?.data?.statusMessage ||
+    result?.message ||
+    result?.data?.message ||
+    fallback
+  );
+}
 
 async function handleSubmit() {
   error.value = "";
@@ -13,6 +37,7 @@ async function handleSubmit() {
   try {
     const response = await fetch("/api/admin/login", {
       method: "POST",
+      credentials: "same-origin",
       headers: {
         "Content-Type": "application/json",
       },
@@ -23,11 +48,11 @@ async function handleSubmit() {
     });
 
     const result = (await response.json().catch(() => null)) as
-      | { error?: string }
+      | AdminApiErrorResponse
       | null;
 
     if (!response.ok) {
-      error.value = result?.error || "Đăng nhập thất bại.";
+      error.value = getErrorMessage(result, "Đăng nhập thất bại.");
       return;
     }
 

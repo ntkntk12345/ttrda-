@@ -1200,3 +1200,32 @@
 [36mi[39m Vite server warmed up in 0ms
 [36mi[39m Vite client warmed up in 1ms
 [90mD[39m > Nitro Start (8ms)
+
+<--- Last few GCs --->
+
+[7544:00000218303E9000]  7021171 ms: Mark-Compact 2044.5 (2050.6) -> 2041.5 (2050.6) MB, pooled: 0 MB, 783.59 / 0.00 ms  (average mu = 0.158, current mu = 0.031) task; scavenge might not succeed
+[7544:00000218303E9000]  7021958 ms: Mark-Compact 2043.2 (2050.6) -> 2041.6 (2049.1) MB, pooled: 2 MB, 763.79 / 0.00 ms  (average mu = 0.096, current mu = 0.029) task; scavenge might not succeed
+
+FATAL ERROR: Ineffective mark-compacts near heap limit Allocation failed - JavaScript heap out of memory
+----- Native stack trace -----
+
+ 1: 00007FF7B759AE1F node::OnFatalError+1343
+ 2: 00007FF7B81E37B7 v8::Function::NewInstance+423
+ 3: 00007FF7B7FE3E77 v8::base::AddressSpaceReservation::AddressSpaceReservation+322071
+ 4: 00007FF7B7FE7B84 v8::base::AddressSpaceReservation::AddressSpaceReservation+337700
+ 5: 00007FF7B7FF6B1C v8::internal::StrongRootAllocatorBase::deallocate_impl+16604
+ 6: 00007FF7B7FF635B v8::internal::StrongRootAllocatorBase::deallocate_impl+14619
+ 7: 00007FF7B945EBED v8::base::UnsignedDivisionByConstant<unsigned __int64>+2791309
+ 8: 00007FF7B7FE1940 v8::base::AddressSpaceReservation::AddressSpaceReservation+312544
+ 9: 00007FF7B7F922F2 EVP_PKEY_asn1_set_get_priv_key+86258
+10: 00007FF7B74ED11A node::GetNodeReport+98346
+11: 00007FF7B74EB900 node::GetNodeReport+92176
+12: 00007FF7B824B19B uv_run+1867
+13: 00007FF7B824AD0F uv_run+703
+14: 00007FF7B76AD4FF node::DecodeWrite+367
+15: 00007FF7B7528DE2 node::MultiIsolatePlatform::DisposeIsolate+242594
+16: 00007FF7B75F549C node::Start+1052
+17: 00007FF7B8612042 AES_cbc_encrypt+2546
+18: 00007FF7B94682F4 v8::base::UnsignedDivisionByConstant<unsigned __int64>+2829972
+19: 00007FFCDE75259D BaseThreadInitThunk+29
+20: 00007FFCE018AF78 RtlUserThreadStart+40
