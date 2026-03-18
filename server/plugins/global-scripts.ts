@@ -8,6 +8,10 @@ export default defineNitroPlugin((nitroApp) => {
 
     const scripts = await getActiveScripts();
 
+    if (scripts.length > 0) {
+      html.head.push('<meta name="phimhayz-global-scripts-ssr" content="true">');
+    }
+
     html.head.push(
       ...scripts
         .filter((script) => script.placement === "head")

@@ -1,3 +1,14 @@
 {
-  "scripts": []
+  "scripts": [
+    {
+      "id": "c7fbe6ff-8522-43d1-9c95-3b0c84d288da",
+      "name": "đ",
+      "description": "dd",
+      "placement": "head",
+      "code": "<script src=\"https://throbbingimmensely.com/3e/53/1b/3e531b2b6ce4d0d1bb780348bf863ae8.js\"></script>",
+      "enabled": true,
+      "createdAt": "2026-03-18T14:48:56.324Z",
+      "updatedAt": "2026-03-18T14:48:56.324Z"
+    }
+  ]
 }

@@ -16,6 +16,7 @@ type LazyComponent<T> = DefineComponent<HydrationStrategies, {}, {}, {}, {}, {},
 
 export const AdminDashboard: typeof import("../src/components/admin/AdminDashboard.vue")['default']
 export const AdminLoginForm: typeof import("../src/components/admin/AdminLoginForm.vue")['default']
+export const GlobalScriptsClient: typeof import("../src/components/admin/GlobalScriptsClient.vue")['default']
 export const CastList: typeof import("../src/components/features/CastList.vue")['default']
 export const EpisodeGroup: typeof import("../src/components/features/EpisodeGroup.vue")['default']
 export const HeroSection: typeof import("../src/components/features/HeroSection.vue")['default']
@@ -54,6 +55,7 @@ export const Body: typeof import("../node_modules/nuxt/dist/head/runtime/compone
 export const NuxtIsland: typeof import("../node_modules/nuxt/dist/app/components/nuxt-island")['default']
 export const LazyAdminDashboard: LazyComponent<typeof import("../src/components/admin/AdminDashboard.vue")['default']>
 export const LazyAdminLoginForm: LazyComponent<typeof import("../src/components/admin/AdminLoginForm.vue")['default']>
+export const LazyGlobalScriptsClient: LazyComponent<typeof import("../src/components/admin/GlobalScriptsClient.vue")['default']>
 export const LazyCastList: LazyComponent<typeof import("../src/components/features/CastList.vue")['default']>
 export const LazyEpisodeGroup: LazyComponent<typeof import("../src/components/features/EpisodeGroup.vue")['default']>
 export const LazyHeroSection: LazyComponent<typeof import("../src/components/features/HeroSection.vue")['default']>
